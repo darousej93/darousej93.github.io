@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Bouncing Box</title>
+	<script src="jquery.min.js"></script>
+	<style>
+		.box {
+			width: 70px;
+			height: 70px;
+			background-color: teal;
+			font-size: 300%;
+			text-align: center;
+			display: block;
+			position: absolute;
+			user-select: none;
+
+		}
+	</style>
+	<!-- 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> -->
+
+</head>
+
+<body class="board">
+	<!-- HTML for the box -->
+	<div class="box">?</div>
+
+	<script>
+		(function() {
+			'use strict';
+			/* global jQuery */
+
+			//////////////////////////////////////////////////////////////////
+			/////////////////// SETUP DO NOT DELETE //////////////////////////
+			//////////////////////////////////////////////////////////////////
+
+			var box = jQuery('.box'); // reference to the HTML .box element
+			var board = jQuery('.board'); // reference to the HTML .board element
+			var boardWidth = board.width(); // the maximum X-Coordinate of the screen
+			var boardBottom = 800;
+			board.css("height", boardBottom)
+
+			// Every 50 milliseconds, call the update Function (see below)
+			setInterval(update, 50);
+
+			// Every time the box is clicked, call the handleBoxClick Function (see below)
+			box.on('click', handleBoxClick);
+			board.on('click', handleBoardClick);
+			// moves the Box to a new position on the screen along the X-Axis
+			function moveBoxTo(newPositionLeft, newPositionTop) {
+				box.css("left", newPositionLeft);
+				box.css("top", newPositionTop);
+			}
+
+			// changes the text displayed on the Box
+			function changeBoxText(newText) {
+				box.text(newText);
+			}
+
+			//////////////////////////////////////////////////////////////////
+			/////////////////// YOUR CODE BELOW HERE /////////////////////////
+			//////////////////////////////////////////////////////////////////
+
+			// TODO 2 - Variable declarations 
+			var directionDegree = 45 //there is a much better way to do this but this is easier
+			var directionRad = Math.PI / 180 * directionDegree; //heading towards the bottom right of the screen. measured in radians
+			var offsetTop = 0;
+			var offsetLeft = 0;
+			var speed = 5;
+			box.css("left", offsetLeft);
+			box.css("top", offsetTop);
+			var score = 0
+
+			/* 
+			This Function will be called 20 times/second. Each time it is called,
+			it should move the Box to a new location. If the box drifts off the screen
+			turn it around! 
+			*/
+			function update() {
+				directionRad = Math.PI / 180 * directionDegree
+				offsetLeft += speed * Math.sin(directionRad);
+				offsetTop += speed * Math.cos(directionRad);
+				if (offsetLeft >= boardWidth) {
+					directionDegree = 360 - directionDegree;
+					directionRad = Math.PI / 180 * directionDegree;
+
+					offsetLeft += speed * Math.sin(directionRad);
+					offsetTop += speed * Math.cos(directionRad);
+					console.log(directionDegree)
+				}
+				if (offsetLeft <= 0) {
+					directionDegree = 360 - directionDegree;
+					directionRad = Math.PI / 180 * directionDegree;
+
+					offsetLeft += speed * Math.sin(directionRad);
+					offsetTop += speed * Math.cos(directionRad);
+					console.log(directionDegree);
+
+				}
+				if (offsetTop <= 0) {
+					directionDegree = 180 - directionDegree;
+					directionRad = Math.PI / 180 * directionDegree;
+
+					offsetLeft += speed * Math.sin(directionRad);
+					offsetTop += speed * Math.cos(directionRad);
+					console.log(directionDegree);
+
+				}
+				if (offsetTop >= boardBottom) {
+					directionDegree = 180 - directionDegree;
+					directionRad = Math.PI / 180 * directionDegree;
+
+					offsetLeft += speed * Math.sin(directionRad);
+					offsetTop += speed * Math.cos(directionRad);
+					console.log(directionDegree);
+
+				}
+				moveBoxTo(offsetLeft, offsetTop);
+			}
+
+
+
+
+			/* 
+			This Function will be called each time the box is clicked. Each time it is called,
+			it should increase the points total, increase the speed, and move the box to
+			the left side of the screen.
+			*/
+			function handleBoxClick() {
+				offsetLeft = Math.random() * boardWidth
+				offsetTop = Math.random() * boardBottom
+				directionDegree = Math.random() * 360
+				moveBoxTo(offsetLeft, offsetTop)
+				score++;
+				changeBoxText(score);
+				speed = speed + 5;
+				event.stopPropagation();
+			};
+
+			function handleBoardClick() {
+				offsetLeft = Math.random() * boardWidth
+				offsetTop = Math.random() * boardBottom
+				directionDegree = Math.random() * 360
+				speed = 5
+				score = 0
+				moveBoxTo(offsetLeft, offsetTop)
+				changeBoxText('0')
+
+
+			}
+		})();
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,15 @@
+{
+    "projects": [{
+            "name": "bouncing-box",
+            "title": "Bouncing Box",
+            "description": "A project that gives you a taste of game development on the web ",
+            "date": "Wednesday, July 15, 2020"
+        },
+        {
+            "name": "bouncing-box",
+            "title": "Platformer",
+            "description": "a platformer game that is a bit wonkey ",
+            "date": "Wednesday, July 15, 2020"
+        }
+    ]
+}
