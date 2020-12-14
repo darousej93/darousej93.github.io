@@ -2,21 +2,62 @@
 <html>
     <head>
         <title>Platformer</title>
-        <script src="lib/jquery.min.js"></script>
-        <script src="lib/phaser.min.js"></script>
-        <script src="js/factory/game.js"></script>
-        <script src="js/factory/preload.js"></script>
-        <script src="js/factory/platform.js"></script>
-        <script src="js/factory/collectable.js"></script>
-        <script src="js/factory/cannon.js"></script>
-        <script src="js/factory/player.js"></script>
-        <script src="js/controller/player-manager.js"></script>
-        <script src="js/init/platform.js"></script>
-        <script src="js/init/collectable.js"></script>
-        <script src="js/init/cannon.js"></script>
-        <script src="js/init/player.js"></script>
+        <script src="https://benspectoros.github.io/projects/platformer/lib/jquery.min.js"></script>
+        <script src="https://benspectoros.github.io/projects/platformer/lib/phaser.min.js"></script>
+        <script src="https://benspectoros.github.io/projects/platformer/js/factory/game.js"></script>
+        <script src="https://benspectoros.github.io/projects/platformer/js/factory/preload.js"></script>
+        <script src="https://benspectoros.github.io/projects/platformer/js/factory/platform.js"></script>
+        <script src="https://benspectoros.github.io/projects/platformer/js/factory/collectable.js"></script>
+        <script src="https://benspectoros.github.io/projects/platformer/js/factory/cannon.js"></script>
+        <script src="https://benspectoros.github.io/projects/platformer/js/factory/player.js"></script>
+        <script src="https://benspectoros.github.io/projects/platformer/js/controller/player-manager.js"></script>
+        <script src="https://benspectoros.github.io/projects/platformer/js/init/platform.js"></script>
+        <script src="https://benspectoros.github.io/projects/platformer/js/init/collectable.js"></script>
+        <script src="https://benspectoros.github.io/projects/platformer/js/init/cannon.js"></script>
+        <script src="https://benspectoros.github.io/projects/platformer/js/init/player.js"></script>
     </head>
     <body>
-        <script src="js/index.js"></script>
+        <script src="https://benspectoros.github.io/projects/platformer/js/index.js"></script>
+        <script>
+            (function (window) {
+    'use strict';
+    window.opspark = window.opspark || {};
+    window.opspark.collectable = window.opspark.collectable || {};
+    window.opspark.collectable = window.opspark.collectable || {};
+    window.opspark.platform = window.opspark.platform || {};
+    
+    let platform = window.opspark.platform;
+    let collectable = window.opspark.collectable;
+    let cannon = window.opspark.cannon;
+
+    let type = {
+        db: {assetKey: 'db', points: 10},
+        max: {assetKey: 'max', points: 20},
+        steve: {assetKey: 'steve', points: 30},
+        grace: {assetKey: 'grace', points: 40},
+        kennedi: {assetKey: 'kennedi', points: 50}
+    };
+    
+    
+    function init(game) {
+        let createCollectable = collectable.create;
+        let createCannon = cannon.create;
+        let createPlatform = platform.create;
+
+        ////////////////////////////////////////////////////////////////////////
+        // ALL YOUR CODE GOES BELOW HERE ///////////////////////////////////////
+        
+        // example: 
+        createCollectable(type.steve, 200, 170, 6, 0.7);
+        
+        
+        
+        // ALL YOUR CODE GOES ABOVE HERE ///////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////
+    };
+    collectable.init = init;
+})(window);
+
+        </script>
     </body>
 </html>
