@@ -4,7 +4,6 @@
 
  **Table of Contents**
  
-- [Installation](#installation)
 - [Objective](#objective)
     - [Where to Code](#where-to-code)
     - [Requirements and Grading](#requirements-and-grading)
@@ -14,29 +13,18 @@
     - [TODO 2: Cannons](#todo-2-cannons)
     - [TODO 3: Collectables](#todo-3-collectables)
     - [TODO 4: Make your level challenging](#todo-4-make-your-level-challenging)
+    - [TODO 5: Go Live](#todo-5-go-live)
 
-# Installation
+# Objective 
+# (Must Read)
 
-### installing Platformer with `os install`
-NOTE: If you receive an error that says, `os install command not found` the opspark CLI is not installed. To install it, enter the command `npm install -g opspark` in your bash terminal. 
-
-* Make sure your github account is linked to Greenlight
-* Open your first website workspace
-* go to your bash terminal (located at the bottom of the IDE workspace) and type in the command **os install**. Hit enter.
-* If prompted, login with your github credentials
-* Use your arrow keys to highlight your course and hit enter. hit enter again to confirm.
-* Use your arrow keys to highlight platformer and hit enter. hit enter again to confirm.
-* open up the index.html file and press Run at the top of your workspace. You will be editing this file.
-
-# Objective
-
-The goal is to design one level of a platformer game using the functions defined in the `js/factory` folder. You will call these functions in the corresponding files located in the `js/init` folder to create the platforms, add cannons, and collectables that Halle must collect.
+The goal is to design one level of a platformer game using the functions defined in the `js/factory` folder. DO NOT WORK IN THAT FOLDER. You will call these functions in the corresponding files located in the `js/init` folder to create the platforms, add cannons, and collectables that Halle must collect. To test your project, you will need to preview the `index.html` file found in your `platformer` folder.
 
 It's up to you to design a level that is challenging but doable. Consider <a href="http://phaser.io/examples/v2/category/tweens" target="_blank">tweening</a> platforms, cannons, and collectables for an additional challenge.
 
 ## Where to Code?
 
-Open up 3 files:
+Open up your `platformer` folder. Then, open up 3 files:
 
 1. `js/init/platform.js`: Follow the instructions outlined in the file to design all required platforms for the game level.
 2. `js/init/cannon.js`: Follow the instructions outlined in the file to design all required cannons for the game level.
@@ -68,6 +56,7 @@ Have fun!
 
 
 ## Functions
+## (Can skip if comfortable with functions)
 
 Functions are predefined blocks of code that can accept input, perform an action, and can return a value. They can be reused many times to perform that action on command.
 
@@ -76,7 +65,7 @@ A **Function Declaration** determines what data the function accepts, what opera
 Here is an example of a Function Declaration called `createCannon`:
 
 ```javascript
-function createCannon(x, y, scaleX, scaleY, immovable) {
+function create(x, y, scaleX, scaleY, immovable) {
     var platform = game.platforms.create(x, y, 'platform');
     platform.scale.setTo(scaleX || 1, scaleY || 1);
     platform.body.immovable = immovable || true;
@@ -88,7 +77,7 @@ This Function accepts 5 pieces of input data: `(x, y, scaleX, scaleY, immovable)
 
 Function Declaration simply define how a function operates - it does not execute the code until a **Function Call** is made.
 
-Here is an example of a function call to the `createCannon` function:
+Here is an example of a function call to the `create` function:
 
 ```javascript
 createCannon(400, 200, 1, 2, true);
@@ -101,11 +90,10 @@ Calling the Function tells the computer to jump into the Function Declaration an
 This Function call will create a platform with an (x,y) location of `(400, 200)` with an X-Scale-Factor of `1`, ad Y-Scale-Factor of `2`, and the immovable property set to `true`. 
 
 # Lesson Steps
+# (Must Read All of this)
 
 ## Run the program
-Open the `index.html` file and follow the instructions below to run your program:
-- **Cloud9**: at the top of your window, click the **Preview** button. Then, in the top right corner of the preview window, click **Pop Out Into New Window**
-- **Codenvy**: right click on the `index.html` file in your file system and click **Preview**
+Right click on your `index.html` file and select "Preview with Live Server".
 
 ## TODO 1: Platforms
 
@@ -119,8 +107,8 @@ Find and open the file `js/init/platform.js` and use the the `createPlatform()` 
 /*
 createPlatform(x, y, scaleX, scaleY);
  
-x: The x coordineate for the platform.
-y: The y coordineate for the platform.
+x: The x coordinate for the platform.
+y: The y coordinate for the platform.
 scaleX: OPTIONAL The scale factor on the x-axis, this value will stretch the platform in width.
 scaleY: OPTIONAL The scale factor on the y-axis, this value will stretch the platform in height.
 */
@@ -136,9 +124,26 @@ createPlatform(500, 500, 0.3, 10)   // tall vertical wall (30% the normal width 
 
 <hr> 
 
+# Very Important:
+1) In most 2D games, the y-axis is inverted. This means that a y value of 500 is closer to the bottom of your screen than a y value of 100. For examples of what this means, click on the "examples" button below. 
+2) The dimensions of your game world are **900 x 700**, so keep that in mind as you move forward.
+
+<details> <summary> Examples </summary>
+
+`createPlatform(0, 100)` puts a platform here
+
+<img width=500 src="asset/readme/y_is_100.png">
+
+`createPlatform(0, 500)` puts a platform here
+
+<img width=500 src="asset/readme/y_is_500.png">
+
+</details>
+
+
 ## TODO 2: Collectables
 
-GOAL: Add as many collectables as necessary (at least 3) to make your level challenging.
+GOAL: Add as many collectables as necessary (at least 3, and remember they need to be of different types) to make your level challenging.
 
 Find and open the file `js/init/collectable.js` and use the `createCollectable()` Function to create collectables for the level. 
 
@@ -194,40 +199,35 @@ delay: OPTIONAL The number of milliseconds to wait before firing the first proje
 Here is an example function call:
 
 ```javascript
-createCannon("top", 450);
+createCannon("top", 450); // a cannon on the top of the screen, located at x = 450
+createCannon("left", 300, 1000); // a cannon on the left side of the screen, located at y = 300, with a 1 second delay (1000ms)
 ```
 <hr> 
 
+### WARNING
+**Placing the cannons outside of bounds of the game will cause it to crash instantly!**
+
 ## TODO 4: Make your level challenging!
 
-Now that you have platforms, cannons, and collectables make your game unique and challenging! In order to get full credit your project must be playable!
+Now that you have platforms, cannons, and collectables make your game unique and challenging! In order to get full credit your project must be playable! Specifically, 
+* It must be possible to collect all collectables
+* It must require changing height to reach at least some collectables (jumping, falling, or a combination)
+* It must require active avoidance of cannon projectiles (i.e. you can't put all cannons in a corner)
 
 ###
 
-
 <hr>
 
-Pushing your work back to GitHub
+## TODO 5: Go Live
 
-After you've designed your level, run (cut and paste) the four commands below:
+In your bash terminal, enter the following commands, pressing ENTER after each one:
 
-1. Change directories into your github folder. The result should look something like this: `cd "hallebot.github.io"` (the github username of the user in this example is `hallebot`). Once your command looks similar to this, press enter to move on to the next command:
+`git add .`
 
-        cd "replace this with your github repository folder"
+`git commit -m 'add portfolio.html file'`
 
-2. Add all your changes to a changeset:
-    
-        git add -A
-    
-3. Commit your changeset:
-    
-        git commit -m"create awesome platformer game"
-    
-4. Push your changeset to your GitHub forked repository:
-    
-        git push
-    
+`git push`
+
+Give it a couple minutes and you should be able to view the additions to your website live on the web at `username.github.io` (Where `username` is your own GitHub username.)
 
 Great work! Pat yourselve on the back and show off your game!
-
-Remember that when you come back to IDE, the webserver might have stopped, so to restart it, you must open the `index.html` file and press the green **Run** button. (See step 4 in the Setup section, above).
