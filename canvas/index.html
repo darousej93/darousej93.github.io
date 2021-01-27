@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>canvas test</title>
+        <style>
+            canvas {
+                width: 100%;       
+                border: solid;
+
+                }
+        </style>
+    </head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext('2d')
+
+setInterval(update, 50);
+var platformsArray = [];
+var gravity = 1;
+var floor = canvas.height;
+var maxSpeed = 20;
+var walkSpeed = 5;
+var rightPressed = false;
+var leftPressed = false;
+var upPressed = false
+var friction = .5 * walkSpeed
+var player = {
+    x:0,
+    y:0,
+    xspeed:0,
+    yspeed:10,
+    width:10,
+    height:10
+}
+
+
+makePlatform(.5,.7,60,25)
+
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+
+function keyDownHandler(e) {
+   if(e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = true;
+    }
+    else if(e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = true;
+    }else if(e.key == "Up" || e.key == "ArrowUp"){
+        upPressed = true
+    }
+    
+}
+
+function keyUpHandler(e) {
+    if(e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = false;
+    }
+    else if(e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = false;
+    }else if(e.key == "Up" || e.key == "ArrowUp"){
+        upPressed = false
+    }
+}
+
+
+function update(){
+
+    if(leftPressed){
+        player.xspeed += -walkSpeed
+    }else if(rightPressed){
+        player.xspeed += walkSpeed
+    }     
+    
+    if(player.xspeed === 0){     
+    }else if(player.xspeed > 0){
+        player.xspeed = player.xspeed - friction 
+    }else {
+        
+        player.xspeed = player.xspeed + friction 
+    }
+    
+
+    if(Math.abs(player.xspeed) < .3){
+        player.xspeed = 0
+    } else if(player.xspeed > maxSpeed){
+        player.xspeed = maxSpeed;
+    }else if(player.xspeed < -maxSpeed){
+        player.xspeed = -maxSpeed
+    }
+  
+ 
+  
+    player.y += player.yspeed 
+    player.x += player.xspeed
+    wallCheck()
+    platformCheck()
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for(var i = 0; i < platformsArray.length; i++){
+       ctx.fillRect(platformsArray[i].x, platformsArray[i].y, platformsArray[i].width, platformsArray[i].height)
+    }
+    ctx.fillRect(player.x, player.y, player.width, player.height)
+    debugStats()
+}
+
+function makePlatform(xPercent,yPercent,width,height){
+  
+  var x = canvas.width * xPercent
+  var y = canvas.height * yPercent
+  
+  var platform = {
+    x:x,
+    y:y,
+    width:width,
+    height:height  
+  }
+  ctx.fillRect(platform.x,platform.y,platform.width,platform.height)
+   
+  platformsArray.push(platform)
+}
+
+function wallCheck(){
+    //floor and jump code
+    if (player.y === floor - player.height){      
+        player.yspeed = 0;
+        player.y = floor - player.height;  
+      if(upPressed){ //jump code
+            player.yspeed = -8
+        }      
+    }else if(player.y <= floor - player.height - 1){
+        player.yspeed = player.yspeed + gravity
+    }else{  
+        player.yspeed = 0;
+        player.y = floor - player.height;
+    }
+  
+
+    if(player.x <= 0){ //left wall
+      if(player.x !== 0){
+        player.x = 0
+        player.xspeed = 0
+      }      
+    }else if(player.x >= canvas.width - player.width){ //right wall
+      if(player.x !== canvas.width-player.width){
+        player.x = canvas.width-player.width
+        player.xspeed = 0
+      } 
+    }
+
+}
+
+function platformCheck(){    
+    var playerBottom = player.y + player.height + player.yspeed
+    var playerTop = player.y + player.yspeed
+    var playerLeft = player.x + player.xspeed
+    var playerRight = player.x + player.width + player.xspeed
+    for(var i = 0; i < platformsArray.length;i++){        
+        var platformTop = platformsArray[i].y
+        var platformBottom = platformsArray[i].y + platformsArray[i].height
+        var platformLeft = platformsArray[i].x
+        var platformRight = platformsArray[i].x + platformsArray[i].width
+        if(playerTop < platformBottom){ 
+            if(playerBottom >= platformTop ){ 
+                if(playerRight >= platformLeft){
+                    if(playerLeft <= platformRight){
+                        if(playerRight >= platformLeft && playerLeft <= platformLeft){
+                            player.x = platformLeft- player.width
+                            player.xspeed = 0
+                            if(upPressed){ //jump code
+                                player.yspeed = -8
+                            }
+                        }else if(playerLeft <= platformRight && playerRight >= platformRight){
+                            player.x = platformRight
+                            player.xspeed = 0
+                            if(upPressed){ //jump code
+                                player.yspeed = -8
+                            }
+                        }
+                         
+                    }
+                }
+            }
+        }
+               
+              
+        
+    }
+    
+}
+
+function debugStats(){
+    ctx.fillText("x:"+player.xspeed,5,15)
+    ctx.fillText("y:"+friction * player.yspeed,5,25)
+}
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>canvas test</title>
+        <style>
+            canvas {
+                width: 100%;       
+                border: solid;
+
+                }
+        </style>
+    </head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext('2d')
+
+setInterval(update, 50);
+var platformsArray = [];
+var gravity = 0;
+var floor = canvas.height;
+var maxSpeed = 20;
+var walkSpeed = 5;
+var rightPressed = false;
+var leftPressed = false;
+var upPressed = false;
+var downPressed = false;
+var friction = .5 * walkSpeed
+var player = {
+    x:0,
+    y:0,
+    xspeed:0,
+    yspeed:0,
+    width:10,
+    height:10
+}
+
+
+
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+
+function keyDownHandler(e) {
+    if(e.key === "ArrowDown"){
+        downPressed  = true;
+    }if(e.key === "ArrowUp"){
+        upPressed  = true;
+    }
+   if(e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = true;
+    }
+    else if(e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = true;
+    }else if(e.key == "Up" || e.key == "ArrowUp"){
+        upPressed = true
+    }
+    
+}
+
+function keyUpHandler(e) {
+    if(e.key === "ArrowDown"){
+        downPressed = false;
+    }
+    if(e.key === "ArrowUp"){
+        upPressed = false;
+    }
+    if(e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = false;
+    }
+    else if(e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = false;
+    }else if(e.key == "Up" || e.key == "ArrowUp"){
+        upPressed = false
+    }
+}
+
+
+function update(){
+
+    if(downPressed){
+        player.yspeed = walkSpeed
+    }
+    if(upPressed){
+        player.yspeed = walkSpeed
+    }
+
+    if(leftPressed){
+        player.xspeed += -walkSpeed
+    }else if(rightPressed){
+        player.xspeed += walkSpeed
+    }     
+    
+    if(player.xspeed === 0){     
+    }else if(player.xspeed > 0){
+        player.xspeed = player.xspeed - friction 
+    }else {
+        
+        player.xspeed = player.xspeed + friction 
+    }
+    
+
+    if(Math.abs(player.xspeed) < .3){
+        player.xspeed = 0
+    } else if(player.xspeed > maxSpeed){
+        player.xspeed = maxSpeed;
+    }else if(player.xspeed < -maxSpeed){
+        player.xspeed = -maxSpeed
+    }
+  
+ 
+  
+    player.y += player.yspeed 
+    player.x += player.xspeed
+    wallCheck()
+  
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+    ctx.fillRect(player.x, player.y, player.width, player.height)
+    debugStats()
+}
+
+
+
+function wallCheck(){
+    //floor and jump code
+    if (player.y === floor - player.height){      
+        player.yspeed = 0;
+        player.y = floor - player.height;  
+      if(upPressed){ //jump code
+            player.yspeed = -8
+        }      
+    }else if(player.y <= floor - player.height - 1){
+        player.yspeed = player.yspeed + gravity
+    }else{  
+        player.yspeed = 0;
+        player.y = floor - player.height;
+    }
+  
+
+    if(player.x <= 0){ //left wall
+      if(player.x !== 0){
+        player.x = 0
+        player.xspeed = 0
+      }      
+    }else if(player.x >= canvas.width - player.width){ //right wall
+      if(player.x !== canvas.width-player.width){
+        player.x = canvas.width-player.width
+        player.xspeed = 0
+      } 
+    }
+
+}
+
+
+
+function debugStats(){
+    ctx.fillText("x:"+player.xspeed,5,15)
+    ctx.fillText("y:"+friction * player.yspeed,5,25)
+}
+
+
+</script>
+
+</body>
+</html>
