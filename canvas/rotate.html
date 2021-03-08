@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>rotate </title>
+</head>
+<body>
+  <canvas id="canvas" width="500" height="500"></canvas>
+  
+  <script>
+    var canvas = document.getElementById("canvas")
+    var ctx = canvas.getContext("2d")
+    setInterval(main,50)
+
+    
+    var x = 100
+    var y = 100
+    var width = 100
+    var height = 50
+    var i = 0
+    radian = Math.PI / 10
+    rotate = radian
+    
+    
+    function main(){
+      ctx.save()
+      rotate += radian
+      ctx.clearRect(0,0,1000,1000)
+      ctx.fillStyle = "hsl(" + i + ",100%,50%) "
+      i++   
+      ctx.translate(x + width / 2,y + height / 2)
+      ctx.rotate(rotate)       
+      ctx.translate(-(x + width / 2),-(y + height / 2))
+      ctx.fillRect(x,y,width,height) 
+      
+      ctx.restore()
+    
+    }
+    
+    
+  </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>runtime
+    </title>
+    <style>
+        img{
+            display:none;
+        }
+    </style>
+  </head>
+  <body>
+    <canvas id='canvas' width='1000' height="800"></canvas>
+    <img id='halle' src='halle-v9.png'>
+
+    <script>
+        var canvas = document.getElementById("canvas")
+        var ctx = canvas.getContext('2d')
+        var halle = document.getElementById("halle")
+        setInterval(main,500) 
+
+        var destinationX = -200
+        var destinationY = -500
+        var rectx = (600 *.4) + destinationX //I had to shrink everything by 40% for it to fit on the screen
+        var recty = (1460 * .4 ) + destinationY
+		var cropX = 600
+		var cropY = 1460
+        var cropHeight = 130  *.4
+        var cropWidth = 65  *.4
+		var destinationWidth = 3518 *.4
+		var destinationHeight = 1941 * .4
+
+
+        function main(){
+            ctx.clearRect(0,0,1000,1000)
+            ctx.drawImage(halle , destinationX, destinationY + 100, destinationWidth, destinationHeight)
+			ctx.strokeRect(rectx , recty + 100, cropWidth,cropHeight)
+            ctx.drawImage(halle ,cropX , cropY, cropWidth/.4,cropHeight/.4, 0, 0, cropWidth/.4, cropHeight/.4)
+				
+			cropX += cropWidth/.4
+			rectx += cropWidth
+				
+			}
+
+   
+
+    </script>
+  </body>
+</html>

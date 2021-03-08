@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+    <head>
+<meta name="description" content="[basic video game example project]">
+        <title>canvas test</title>
+        <style>
+            canvas {
+                
+                border: solid;
+
+                }
+        </style>
+    </head>
+<body>
+
+<canvas id="canvas" width="1000" height="800"></canvas>
+
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext('2d')
+
+
+var listCircles = []
+var drawnCircles = []
+var percision = 1000
+var offset = 100
+listCircles.push({
+    i:0,
+    r: 50,
+})
+
+
+ctx.translate(offset,offset)
+setInterval(update,5)
+
+function drawCircle(){
+    
+    
+    ctx.translate(Math.sin(currentCircle.i) * currentCircle.r,Math.cos(currentCircle.i) * currentCircle.r )
+    ctx.beginPath()
+    ctx.arc(0,0,4,0,Math.PI * 2)
+    ctx.fill()
+    currentCircle.i = currentCircle.i + Math.PI / percision
+    return drawCircle()
+   
+
+}
+  
+function update(){
+    ctx.clearRect(0 - offset, 0 - offset, canvas.width, canvas.height);
+    for(var i = 0; i < percision; i++){
+        ctx.save()
+        listCircles.push(drawCircle(listCircles))
+        ctx.restore()
+
+    }
+   
+}
+
+
+
+
+</script>
+
+</body>
+</html>

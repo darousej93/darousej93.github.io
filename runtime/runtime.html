@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>runtime
+    </title>
+    <style>
+        img{
+            display:none;
+        }
+    </style>
+  </head>
+  <body>
+    <canvas id='canvas' width='500' height="500"></canvas>
+    <img id='halle' src='/runtime/img/halle-v9.png'>
+    <img id='sawblade' src='/runtime/img/sawblade.png'>
+    <img id='moon' src='/runtime/img/moon.png'>
+    <img id='tree' src='/runtime/img/tree.png'>
+    <img id='streetLight' src='/runtime/img/street-light.png'>
+
+    <script>
+        var canvas = document.getElementById("canvas")
+        var ctx = canvas.getContext('2d')
+        var sawblade = document.getElementById("sawblade")
+        var moon = document.getElementById("moon")
+        var tree = document.getElementById("tree")
+        var streetLight = document.getElementById("streetLight")
+
+        setInterval(main,50)
+
+        var x = 0 
+        var y = 0 
+        var xspeed = 0
+        var yspeed = 0
+        var upPress = false
+        var leftPress = false
+        var downPress = false
+        var rightPress = false
+        var spacePress = false
+        var walkspeed = 1
+        var frameCount = 0
+        halleHeight = 120
+        halleWidth = 85
+        xpicture = 2295
+        ypicture = 1330
+
+
+        function main(){
+            frameCount++
+            ctx.clearRect(0,0,1000,1000)
+            x = x + xspeed
+            y = y + yspeed
+            //ctx.drawImage(imageVaribale, sourceY, SourceX, sourceWidth, sourceHeight, canvasX, canvasY, finalWidth, finalHeight)
+            //https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
+            //you only need the extra four source arguments if you want to only display a portion of the picture, if you want to show the whole picture you can just do drawImage(imageVar, canvasx, canvasy, width,height)
+            ctx.drawImage(halle,xpicture,ypicture,halleWidth,halleHeight,x,y,halleWidth,halleHeight)
+            if(frameCount > 15){
+                xpicture += halleWidth
+                frameCount = 0
+            }
+
+
+
+
+            if(upPress){
+                yspeed -= walkspeed
+            }
+            if(downPress){
+                yspeed += walkspeed
+            }
+            if(leftPress){
+                xspeed -= walkspeed
+            }
+            if(rightPress){
+                xspeed += walkspeed
+            }
+
+
+            if(x > canvas.width){
+                xspeed = -xspeed
+            }
+            if(x < 0){
+                xspeed = -xspeed
+            }
+            if(y > canvas.height){
+                yspeed = -yspeed
+            }
+            if(y < 0){
+                yspeed = -yspeed
+            }
+        }
+
+    document.addEventListener("keydown", keyleftPress,false)
+	document.addEventListener("keyup", keyuppress,false)
+
+	function keyleftPress(e){
+		if(e.key === "ArrowUp"){
+			upPress= true
+		}
+		if(e.key === "ArrowLeft"){
+			leftPress= true
+		}
+		if(e.key === "ArrowDown"){
+			downPress= true
+		}
+		if(e.key === "ArrowRight"){
+			rightPress= true
+		}
+		if(e.key === " "){
+			spacePress= true
+		}
+			
+	}
+	function keyuppress(e){
+		if(e.key === "ArrowUp"){
+			upPress= false
+		}
+		if(e.key === "ArrowLeft"){
+			leftPress= false
+		}
+		if(e.key === "ArrowDown"){
+			downPress= false
+		}
+		if(e.key === "ArrowRight"){
+			rightPress= false
+		}
+		if(e.key === " "){
+			spacePress= false
+		}
+	}
+
+    </script>
+  </body>
+</html>

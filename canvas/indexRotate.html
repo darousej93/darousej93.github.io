@@ -13,11 +13,13 @@
 <body>
 
 <canvas id="canvas"></canvas>
+<img id='treecutout' src="/treecutout.png" hidden>
 
 
 <script>
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext('2d')
+var treecutoutImg = document.getElementById("treecutout")
 
 setInterval(update, 50);
 var platformsArray = [];
@@ -35,8 +37,8 @@ var player = {
     y:0,
     xspeed:0,
     yspeed:0,
-    width:10,
-    height:10
+    width:100,
+    height:100
 }
 
 
@@ -50,13 +52,11 @@ function keyDownHandler(e) {
     }if(e.key === "ArrowUp"){
         upPressed  = true;
     }
-   if(e.key == "Right" || e.key == "ArrowRight") {
+   if(e.key == "ArrowRight") {
         rightPressed = true;
     }
-    else if(e.key == "Left" || e.key == "ArrowLeft") {
+     if(e.key == "ArrowLeft") {
         leftPressed = true;
-    }else if(e.key == "Up" || e.key == "ArrowUp"){
-        upPressed = true
     }
     
 }
@@ -68,13 +68,11 @@ function keyUpHandler(e) {
     if(e.key === "ArrowUp"){
         upPressed = false;
     }
-    if(e.key == "Right" || e.key == "ArrowRight") {
+    if(e.key == "ArrowRight") {
         rightPressed = false;
     }
-    else if(e.key == "Left" || e.key == "ArrowLeft") {
+    if( e.key == "ArrowLeft") {
         leftPressed = false;
-    }else if(e.key == "Up" || e.key == "ArrowUp"){
-        upPressed = false
     }
 }
 
@@ -82,10 +80,10 @@ function keyUpHandler(e) {
 function update(){
 
     if(downPressed){
-        player.yspeed = walkSpeed
+        player.yspeed += walkSpeed
     }
     if(upPressed){
-        player.yspeed = walkSpeed
+        player.yspeed += -walkSpeed
     }
 
     if(leftPressed){
@@ -101,26 +99,41 @@ function update(){
         
         player.xspeed = player.xspeed + friction 
     }
+   
+    if(player.yspeed === 0){     
+    }else if(player.yspeed > 0){
+        player.yspeed = player.yspeed - friction 
+    }else {
+        
+        player.yspeed = player.yspeed + friction 
+    }
     
 
-    if(Math.abs(player.xspeed) < .3){
+    if(Math.abs(player.yspeed) < .3){
+        player.yspeed = 0
+    } else if(player.yspeed > maxSpeed){
+        player.yspeed = maxSpeed;
+    }else if(player.yspeed < -maxSpeed){
+        player.yspeed = -maxSpeed
+    }
+  if(Math.abs(player.xspeed) < .3){
         player.xspeed = 0
     } else if(player.xspeed > maxSpeed){
         player.xspeed = maxSpeed;
     }else if(player.xspeed < -maxSpeed){
         player.xspeed = -maxSpeed
     }
-  
  
   
     player.y += player.yspeed 
     player.x += player.xspeed
-    wallCheck()
+   // wallCheck()
   
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   
-    ctx.fillRect(player.x, player.y, player.width, player.height)
+    //ctx.drawImage(treecutoutImg ,player.x, player.y, player.width, player.height)
+    ctx.drawImage(treecutoutImg ,0, 0, player.x, player.y)
     debugStats()
 }
 
@@ -128,30 +141,25 @@ function update(){
 
 function wallCheck(){
     //floor and jump code
-    if (player.y === floor - player.height){      
-        player.yspeed = 0;
-        player.y = floor - player.height;  
-      if(upPressed){ //jump code
-            player.yspeed = -8
-        }      
-    }else if(player.y <= floor - player.height - 1){
-        player.yspeed = player.yspeed + gravity
-    }else{  
-        player.yspeed = 0;
-        player.y = floor - player.height;
+    if(player.y < 0){ //left wall
+      if(player.y !== 0){
+        player.y = 0
+        player.yspeed = 0
+      }      
+    }else if(player.y > canvas.height ){ 
+        player.y = canvas.height-player.height
+        player.yspeed = 0
     }
   
 
-    if(player.x <= 0){ //left wall
+    if(player.x < 0){ //left wall
       if(player.x !== 0){
         player.x = 0
         player.xspeed = 0
       }      
-    }else if(player.x >= canvas.width - player.width){ //right wall
-      if(player.x !== canvas.width-player.width){
+    }else if(player.x > canvas.width - player.width){ //right wall
         player.x = canvas.width-player.width
         player.xspeed = 0
-      } 
     }
 
 }

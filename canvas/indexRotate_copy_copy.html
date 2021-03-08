@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+    <head>
+<meta name="description" content="[basic video game example project]">
+        <title>canvas test</title>
+        <style>
+            canvas {
+                width: 100%;       
+                border: solid;
+
+                }
+        </style>
+    </head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext('2d')
+
+setInterval(update, 50);
+var platformsArray = [];
+var gravity = 0;
+var floor = canvas.height;
+var maxSpeed = 20;
+var walkSpeed = 5;
+var rightPressed = false;
+var leftPressed = false;
+var upPressed = false;
+var downPressed = false;
+var friction = .5 * walkSpeed
+var player = {
+    x:0,
+    y:0,
+    xspeed:0,
+    yspeed:0,
+    width:10,
+    height:10
+}
+var listRocks = []
+for(var i = 0; i < 50; i++){
+    listRocks.push({
+        x: i,
+        y: i,
+        height: 10,
+        width: 10,
+    })
+}
+
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+
+function keyDownHandler(e) {
+    if(e.key === "ArrowDown"){
+        downPressed  = true;
+    }if(e.key === "ArrowUp"){
+        upPressed  = true;
+    }
+   if(e.key == "ArrowRight") {
+        rightPressed = true;
+    }
+     if(e.key == "ArrowLeft") {
+        leftPressed = true;
+    }
+    
+}
+
+function keyUpHandler(e) {
+    if(e.key === "ArrowDown"){
+        downPressed = false;
+    }
+    if(e.key === "ArrowUp"){
+        upPressed = false;
+    }
+    if(e.key == "ArrowRight") {
+        rightPressed = false;
+    }
+    if( e.key == "ArrowLeft") {
+        leftPressed = false;
+    }
+}
+
+function movementKeysCode(){
+      if(downPressed){
+        player.yspeed += walkSpeed
+    }
+    if(upPressed){
+        player.yspeed += -walkSpeed
+    }
+
+    if(leftPressed){
+        player.xspeed += -walkSpeed
+    }else if(rightPressed){
+        player.xspeed += walkSpeed
+    }     
+  
+}
+  
+function frictionCode(){
+     if(player.xspeed === 0){     
+    }else if(player.xspeed > 0){
+        player.xspeed = player.xspeed - friction 
+    }else {
+        
+        player.xspeed = player.xspeed + friction 
+    }
+   
+    if(player.yspeed === 0){     
+    }else if(player.yspeed > 0){
+        player.yspeed = player.yspeed - friction 
+    }else {
+        
+        player.yspeed = player.yspeed + friction 
+    }
+}
+  
+  
+function wallCheck(){
+    //floor and jump code
+    if(player.y < 0){ //left wall
+      if(player.y !== 0){
+        player.y = 0
+        player.yspeed = 0
+      }      
+    }else if(player.y > canvas.height ){ 
+        player.y = canvas.height-player.height
+        player.yspeed = 0
+    }
+  
+
+    if(player.x < 0){ //left wall
+      if(player.x !== 0){
+        player.x = 0
+        player.xspeed = 0
+      }      
+    }else if(player.x > canvas.width - player.width){ //right wall
+        player.x = canvas.width-player.width
+        player.xspeed = 0
+    }
+
+}
+
+
+
+function debugStats(){
+    ctx.fillText("x:"+player.xspeed,5,15)
+    ctx.fillText("y:"+friction * player.yspeed,5,25)
+}
+
+function maxSpeedCode(){
+    
+    if(Math.abs(player.yspeed) < .3){
+        player.yspeed = 0
+    } else if(player.yspeed > maxSpeed){
+        player.yspeed = maxSpeed;
+    }else if(player.yspeed < -maxSpeed){
+        player.yspeed = -maxSpeed
+    }
+  if(Math.abs(player.xspeed) < .3){
+        player.xspeed = 0
+    } else if(player.xspeed > maxSpeed){
+        player.xspeed = maxSpeed;
+    }else if(player.xspeed < -maxSpeed){
+        player.xspeed = -maxSpeed
+    }
+}
+  
+function update(){
+
+movementKeysCode()
+frictionCode()
+maxSpeedCode()
+
+player.y += player.yspeed 
+player.x += player.xspeed
+    
+
+
+
+
+wallCheck()
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+ for(var i = 0; i < listRocks.length; i++){
+    ctx.fillStyle = "brown"
+    ctx.fillRect(listRocks[i].x,listRocks[i].y,listRocks[i].height,listRocks[i].width)
+    ctx.fillStyle = "black"
+} 
+ctx.fillRect(player.x, player.y, player.width, player.height)
+   
+debugStats()
+}
+
+
+
+
+</script>
+
+</body>
+</html>
