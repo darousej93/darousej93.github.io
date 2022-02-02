@@ -119,23 +119,23 @@ function bounceCircle(circle){
 
     // this bounces 00off the left wall
     if (circle.x < 0){
-        circle.x = -circle.x;
         circle.speedX *= -1;
+        circle.x += circle.speedX;
     }
     // this bounces off the right wall
     else if (circle.x > boardWidth){
-        circle.x -= circle.speedX;
         circle.speedX *= -1;
+        circle.x += circle.speedX;
     }
     // this bounces off the top wall
     if (circle.y < 0){
-        circle.y = -circle.y;
         circle.speedY *= -1;
+        circle.y += circle.speedY;
     }
     // this bounces off the bottom wall
     else if (circle.y > boardHeight){
-        circle.y = -circle.y;
         circle.speedY *= -1;
+        circle.y += circle.speedY;
     }
 }
 
