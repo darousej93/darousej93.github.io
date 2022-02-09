@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        #die {
+            height: 100px;
+            width: 100px;
+            background-color: lightgray;
+            /* feel free to change this */
+            position: absolute;
+            border-radius: 10%;
+            top:200px;
+            left:200px;
+        }
+
+        .dot {
+            height: 15px;
+            width: 15px;
+            background-color: black;
+            position: absolute;
+            border-radius: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="die"></div>
+    <div id="test"></div>
+</body>
+
+</html>
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script>
+
+    makeDot(Math.random()*5+1)
+
+    //var i = 1
+    //setInterval(test, 500)
+    function test() {
+        makeDot(i)
+        document.getElementById("test").innerText = i
+        i++
+        if (i === 7) {
+            i = 1
+        }
+    }
+
+    $("#die").on("click", clickHandler);
+
+    function clickHandler(){
+        speed = -40
+        count = 100
+    }
+
+    setInterval(animate,30)
+    var y = 200
+    var speed = 0
+    var friction = 5
+
+
+    function animate(){
+        
+        y = y + speed
+        $("#die").css("top",y)
+        if(y < 198){
+            
+            makeDot(Math.floor(Math.random()*5+1))
+            speed = speed + friction
+        }else{
+            if(Math.abs(speed) < 2){
+                speed = 0
+                if(count>0){
+                 makeDot(Math.floor(Math.random()*5+1))
+                }
+                count = 0
+                
+            }else{
+                speed = -(speed/2)
+            }
+            y = 200
+        }
+
+
+    }
+
+    function makeDot(number) {
+        $("#die").empty()
+        if (number % 2 === 1) {
+            $('<div>')
+                .addClass("dot")
+                .css('top', 40)
+                .css('left', 40)
+                .appendTo("#die");
+        }
+        if (number % 2 === 0) {
+            $('<div>')
+                .addClass("dot")
+                .css('top', 15)
+                .css('left', 15)
+                .appendTo("#die");
+
+            $('<div>')
+                .addClass("dot")
+                .css('top', 65)
+                .css('left', 65)
+                .appendTo("#die");
+        }
+
+
+
+        if (number > 2) {
+            $('<div>')
+                .addClass("dot")
+                .css('top', 65)
+                .css('left', 65)
+                .appendTo("#die");
+            $('<div>')
+                .addClass("dot")
+                .css('top', 15)
+                .css('left', 15)
+                .appendTo("#die");
+        }
+
+        if (number > 3) {
+            $('<div>')
+                .addClass("dot")
+                .css('top', 15)
+                .css('left', 65)
+                .appendTo("#die");
+            $('<div>')
+                .addClass("dot")
+                .css('top', 65)
+                .css('left', 15)
+                .appendTo("#die");
+        }
+
+        if(number === 6){
+            $('<div>')
+                .addClass("dot")
+                .css('top', 40)
+                .css('left', 15)
+                .appendTo("#die");
+                
+            $('<div>')
+                .addClass("dot")
+                .css('top', 40)
+                .css('left', 65)
+                .appendTo("#die");
+        }
+
+    }
+
+</script>
