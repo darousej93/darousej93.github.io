@@ -8,3 +8,6 @@ body > div {
     position: relative;
     height: 200px;
 }
+#buttons{
+    height:fit-content;
+}
