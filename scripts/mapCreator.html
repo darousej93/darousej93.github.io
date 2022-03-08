@@ -1,0 +1,121 @@
+<!doctype HTML>
+<html>
+
+<head></head>
+
+<body>
+    <canvas id="canvas" width="1000" height="700"></canvas>
+    <button id="downloadButton">save</button>
+    <a id="downloadAnchorElement" style="display:none"></a>
+    <input id="fileName" placeholder="put Filename Here"></input>
+    <input type="file" id="selectFiles" value="Import" /><br />
+    <button id="load">load</button>
+</body>
+
+</html>
+
+<script>
+    var canvas = document.getElementById("canvas")
+    var ctx = canvas.getContext("2d")
+    var downloadAnchorElement = document.getElementById('downloadAnchorElement');
+    canvas.addEventListener("mousemove", mouseCordsSet)
+    canvas.addEventListener("mousedown", mouseDown)
+    canvas.addEventListener("mouseup", mouseUp)
+    document.getElementById("downloadButton").addEventListener("click", saveGridAsJson)
+    //https://stackoverflow.com/questions/36127648/uploading-a-json-file-and-using-it
+    //link to file import and export functions
+    document.getElementById("load").addEventListener("click", loadGridJson)
+
+    var gridSize = 10 //the size of the grid squares
+    var highlightGrid = true
+
+    var mousex
+    var mousey
+    var mouseClick = false
+    var gridArray = [] //this is where the map is stored
+
+    setInterval(main, 1)
+
+    function main() {
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        createGrid()
+        var highlightx = mousex - (mousex % gridSize) //using mod to round down mousex to the nearist grid
+        var highlighty = mousey - (mousey % gridSize)
+        var gridSquareIndex = Math.floor(highlighty / gridSize) * Math.floor(canvas.width / gridSize) + Math.floor(highlightx / gridSize) //this turns your grid position into the index number for the array
+
+        if (highlightGrid) {
+            ctx.fillStyle = "lightgrey"
+            //that previous bit will give me the chords of the box that the mouse is inside so I can highlight it
+            ctx.fillRect(highlightx, highlighty, gridSize, gridSize)
+        }
+
+        if (mouseClick) {
+            if (!gridArray[gridSquareIndex]) {
+                gridArray[gridSquareIndex] = true
+            }
+        }
+
+
+    }
+
+    function mouseCordsSet(e) {
+        mousex = e.offsetX
+        mousey = e.offsetY
+
+
+    }
+
+    function createGrid() {
+        ctx.strokeStyle = "lightgrey"
+        for (let i = 0; i < canvas.width; i = i + gridSize) {
+            //vertical lines
+            ctx.beginPath()
+            ctx.moveTo(i, 0)
+            ctx.lineTo(i, canvas.height)
+            ctx.stroke()
+        }
+        for (let i = 0; i < canvas.height; i = i + gridSize) {
+            //horizontal
+            ctx.beginPath()
+            ctx.moveTo(0, i)
+            ctx.lineTo(canvas.width, i)
+            ctx.stroke()
+        }
+        ctx.fillStyle = "black"
+        for (let i = 0; i < gridArray.length; i++) {
+            if (gridArray[i]) {
+
+                var gridX = i % Math.floor(canvas.width / gridSize) * gridSize
+                var gridY = Math.floor(i / Math.floor(canvas.width / gridSize)) * gridSize
+                ctx.fillRect(gridX, gridY, gridSize, gridSize)
+            }
+
+        }
+
+    }
+
+    function mouseDown() {
+        mouseClick = true
+    }
+
+    function mouseUp() {
+        mouseClick = false
+    }
+
+    function saveGridAsJson() {
+        var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(gridArray));
+        downloadAnchorElement.setAttribute("href", dataStr);
+        var nameOfJsonFile = document.getElementById("fileName").value + ".json"
+        downloadAnchorElement.setAttribute("download", nameOfJsonFile);
+        downloadAnchorElement.click();
+    }
+
+    function loadGridJson() {
+        var files = document.getElementById('selectFiles').files;
+        var fr = new FileReader();
+        gridArray = JSON.parse(fr.readAsText(files.item(0)))
+    }
+
+
+</script>
