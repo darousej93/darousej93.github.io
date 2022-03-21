@@ -13,21 +13,17 @@
   <body>
     <canvas id='canvas' width='900' height="700"></canvas>
     <img id='halle' src='/runtime/img/halle-v9.png'>
-    <img id='sawblade' src='/runtime/img/sawblade.png'>
-    <img id='moon' src='/runtime/img/moon.png'>
-    <img id='tree' src='/runtime/img/tree.png'>
-    <img id='streetLight' src='/runtime/img/street-light.png'>
 
     <script>
         var canvas = document.getElementById("canvas")
         var ctx = canvas.getContext('2d')
-        var sawblade = document.getElementById("sawblade")
-        var moon = document.getElementById("moon")
-        var tree = document.getElementById("tree")
-        var streetLight = document.getElementById("streetLight")
 
         setInterval(main,50)
 
+        //setup variables
+        var walkspeed = 1
+
+        //player Variables
         var playerX = 0 
         var playerY = 0 
         var playerSpeedX = 0
@@ -37,8 +33,16 @@
         var downPress = false
         var rightPress = false
         var spacePress = false
-        var walkspeed = 1
         var frameCount = 0
+
+        //platform variables
+        var platformX = []
+        var platformY = []
+        var platformWidth = []
+        var platformHeight = []
+
+        //cannon variables
+        
         
         halleHeight = 120
         halleWidth = 85

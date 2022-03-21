@@ -1,15 +1,51 @@
 <!doctype HTML>
 <html>
 
-<head></head>
+<head>
+    <style>
+        canvas {
+            float: left;
+        }
+
+        div {
+            width: fit-content;
+            float: left;
+        }
+
+        .tiles {
+            height: 30px;
+            width: 60px;
+            min-width: 30px;
+            border-color: black;
+            border-style: solid;
+        }
+
+        #floor {}
+    </style>
+
+
+</head>
 
 <body>
+    <div id="buttons">
+        <button id="downloadButton">save</button>
+        <a id="downloadAnchorElement" style="display:none"></a>
+        <input id="fileName" placeholder="put Filename Here"></input>
+        <input type="file" id="selectFiles" value="Import"></input>
+        <button id="load">load</button>
+    </div>
     <canvas id="canvas" width="1000" height="700"></canvas>
-    <button id="downloadButton">save</button>
-    <a id="downloadAnchorElement" style="display:none"></a>
-    <input id="fileName" placeholder="put Filename Here"></input>
-    <input type="file" id="selectFiles" value="Import" /><br />
-    <button id="load">load</button>
+    <div id="colors">
+
+        <div class="tiles" id="eraser"> eraser</div>
+        <br>
+        <div class="tiles" id="floor">pixel</div>
+        <br>
+        <div class="tiles" id="square">square</div>
+
+    </div>
+
+
 </body>
 
 </html>
@@ -25,34 +61,100 @@
     //https://stackoverflow.com/questions/36127648/uploading-a-json-file-and-using-it
     //link to file import and export functions
     document.getElementById("load").addEventListener("click", loadGridJson)
+    document.getElementById("eraser").addEventListener("click", function () { palletId = 0 })
+    document.getElementById("floor").addEventListener("click", function () { palletId = 1 })
+    document.getElementById("square").addEventListener("click", function () { palletId = 2 })
 
-    var gridSize = 10 //the size of the grid squares
+
+
+    var gridSize = 20 //the size of the grid squares
     var highlightGrid = true
-
+    var palletId = 1 //0 for eraser, 1 for floor
+    var squareStartx = null
+    var squareStarty = null
+    var gridCollumns = Math.floor(canvas.width / gridSize)
+    var gridRows = Math.floor(canvas.height / gridSize)
     var mousex
     var mousey
+    var oldx
+    var oldy
     var mouseClick = false
     var gridArray = [] //this is where the map is stored
+    var gridArrayIndexOfCurrentMousePosition //translates the mouse x and y to an index number for the array
 
     setInterval(main, 1)
+
+    //create the grid array
+    {//this thing allows you to declare some temp variables that dissapear after the curly braces, just don't worry about them. i use this so they don't become globals
+        //or maybe it doesn't and I don't understand it well... we'll see
+        let collums = Math.floor(canvas.width / gridSize)
+        let rows = Math.floor(canvas.height / gridSize)
+        for (let i = 0; i < collums * rows; i++) {
+            gridArray[i] = 0
+        }
+
+    }
 
     function main() {
 
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         createGrid()
-        var highlightx = mousex - (mousex % gridSize) //using mod to round down mousex to the nearist grid
-        var highlighty = mousey - (mousey % gridSize)
-        var gridSquareIndex = Math.floor(highlighty / gridSize) * Math.floor(canvas.width / gridSize) + Math.floor(highlightx / gridSize) //this turns your grid position into the index number for the array
+        var gridAllignedMousex = mousex - (mousex % gridSize) //using mod to round down mousex to the nearist grid
+        var gridAllignedMousey = mousey - (mousey % gridSize)
+        gridArrayIndexOfCurrentMousePosition = Math.floor(gridAllignedMousey / gridSize) * Math.floor(canvas.width / gridSize) + Math.floor(gridAllignedMousex / gridSize) //this turns your grid position into the index number for the array
+
 
         if (highlightGrid) {
             ctx.fillStyle = "lightgrey"
             //that previous bit will give me the chords of the box that the mouse is inside so I can highlight it
-            ctx.fillRect(highlightx, highlighty, gridSize, gridSize)
+            gridAllignFillRect(mousex, mousey)
         }
 
         if (mouseClick) {
-            if (!gridArray[gridSquareIndex]) {
-                gridArray[gridSquareIndex] = true
+            if (palletId === 0) { //eraser
+                gridArray[gridArrayIndexOfCurrentMousePosition] = palletId
+            } else if (palletId === 1) { //pen tool
+                gridArray[gridArrayIndexOfCurrentMousePosition] = palletId
+            } else if (palletId === 2) { //square drawer
+                if (squareStartx === null) { //sets start for the square
+                    squareStartx = mousex //we do this so that it only saves a start value for the first time you click, not every time
+                    squareStarty = mousey //when we are done with the square it will reset the values to null so they can be overwritten again
+                } else {
+                    let gridAdjustedSquareStartx = squareStartx - (squareStartx % gridSize)
+                    let gridAdjustedSquareStarty = squareStarty - (squareStarty % gridSize) //this gets the x and y of the grid square of the oragin of this box
+                    let gridAdjustedMousex = mousex - (mousex % gridSize) //this get the x and y of the grid the mouse is in. 
+                    let gridAdjustedMousey = mousey - (mousey % gridSize)
+                    let collumsInSquare = gridAdjustedSquareStartx - gridAdjustedMousex
+                    let rowsInSquare = gridAdjustedSquareStarty - gridAdjustedMousey
+                    for (let i = 0; i <= Math.abs(collumsInSquare); i = i + gridSize) {
+                        for (let j = 0; j <= Math.abs(rowsInSquare); j = j + gridSize) {
+                            if (rowsInSquare > 0) {
+                                if (collumsInSquare > 0) {//top left
+                                    gridAllignFillRect(squareStartx - i, squareStarty - j)
+                                } else {//top right
+                                    gridAllignFillRect(squareStartx + i, squareStarty - j)
+                                }
+                            } else {
+                                if (collumsInSquare > 0) {//bottom left
+                                    gridAllignFillRect(squareStartx - i, squareStarty + j)
+                                } else {//bottom right
+                                    gridAllignFillRect(squareStartx + i, squareStarty + j)
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }//end of square drawer
+
+
+        } else {
+            if (palletId === 2) {
+                if (squareStartx !== null) { //if it is not null that means we just let go of the mouse click and want to save our current square into the array
+                    saveToArray(squareStartx, squareStarty)
+                }
+                squareStartx = null//resets the start. 
+                squareStarty = null
             }
         }
 
@@ -60,11 +162,63 @@
     }
 
     function mouseCordsSet(e) {
+        oldx = mousex
+        oldy = mousey
         mousex = e.offsetX
         mousey = e.offsetY
 
 
     }
+
+    function gridAllignFillRect(x, y) {
+        //this function simply makes sure that the x and y points are getting translated into a box
+        var gridAllignedMousex = x - (x % gridSize) //using mod to round down mousex to the nearist grid
+        var gridAllignedMousey = y - (y % gridSize)
+        ctx.fillRect(gridAllignedMousex, gridAllignedMousey, gridSize, gridSize)
+    }
+
+    function saveToArray(x, y) { //this exists so that control z works
+        if (palletId !== 2) { //erase and fill in tile
+            gridArray[gridArrayIndexOfCurrentMousePosition] = palletId
+        } else if (palletId === 2) {//save square
+            //note that in this situation x and y represent the start of the box, and mousex and mousy are the end
+            let gridAdjustedSquareStartx = squareStartx - (squareStartx % gridSize) //adjusts the position to the top left corner of the nearest grid square
+            let gridAdjustedSquareStarty = squareStarty - (squareStarty % gridSize)
+            let gridAdjustedMousex = mousex - (mousex % gridSize) //this get the x and y of the grid the mouse is in. 
+            let gridAdjustedMousey = mousey - (mousey % gridSize)
+            let collumsInSquare = (gridAdjustedSquareStartx - gridAdjustedMousex) / gridSize
+            let rowsInSquare = (gridAdjustedSquareStarty - gridAdjustedMousey) / gridSize
+            for (let i = 0; i <= Math.abs(collumsInSquare); i = i + 1) {
+                for (let j = 0; j <= Math.abs(rowsInSquare); j = j + 1) {
+                    
+                    if (rowsInSquare > 0) {
+                        if (collumsInSquare > 0) {//top left
+                            gridAllignFillRect(squareStartx - i * gridSize, squareStarty - j * gridSize)
+                            xyPosToIndex = Math.floor((squareStarty - j * gridSize) / gridSize) * Math.floor(canvas.width / gridSize) + Math.floor((squareStartx - i * gridSize) / gridSize) //this turns your grid position into the index number for the array
+                        } else {//top right
+                            gridAllignFillRect(squareStartx + i * gridSize, squareStarty - j * gridSize) 
+                            xyPosToIndex = Math.floor((squareStarty - j * gridSize) / gridSize) * Math.floor(canvas.width / gridSize) + Math.floor((squareStartx + i * gridSize) / gridSize) //this turns your grid position into the index number for the array
+                        }
+                    } else {
+                        if (collumsInSquare > 0) {//bottom left
+                            gridAllignFillRect(squareStartx - i * gridSize, squareStarty + j * gridSize)
+                            xyPosToIndex = Math.floor((squareStarty + j * gridSize) / gridSize) * Math.floor(canvas.width / gridSize) + Math.floor((squareStartx - i * gridSize) / gridSize) //this turns your grid position into the index number for the array
+                        } else {//bottom right
+                            gridAllignFillRect(squareStartx + i * gridSize, squareStarty + j * gridSize)
+                            xyPosToIndex = Math.floor((squareStarty + j * gridSize) / gridSize) * Math.floor(canvas.width / gridSize) + Math.floor((squareStartx + i * gridSize) / gridSize) //this turns your grid position into the index number for the array
+                        }
+                    }                    
+                    gridArray[xyPosToIndex] = 1
+                    var gridX = xyPosToIndex % Math.floor(canvas.width / gridSize) * gridSize //this code is translating the 1 demensional i into the 2d x and y. Imgainine you numbered every square in the grid left to right top to bottom. That number would be i. 
+                    var gridY = Math.floor(xyPosToIndex / Math.floor(canvas.width / gridSize)) * gridSize
+                    ctx.fillRect(gridX, gridY, gridSize, gridSize)
+                }
+
+            }
+
+        }
+    }
+
 
     function createGrid() {
         ctx.strokeStyle = "lightgrey"
@@ -84,11 +238,15 @@
         }
         ctx.fillStyle = "black"
         for (let i = 0; i < gridArray.length; i++) {
-            if (gridArray[i]) {
-
-                var gridX = i % Math.floor(canvas.width / gridSize) * gridSize
-                var gridY = Math.floor(i / Math.floor(canvas.width / gridSize)) * gridSize
-                ctx.fillRect(gridX, gridY, gridSize, gridSize)
+            if (gridArray[i] !== undefined) {
+                if (gridArray[i] !== 0) {
+                    if (gridArray[i] === 1 || griedarray) {
+                        ctx.fillStyle = "black"
+                    }
+                    var gridX = i % Math.floor(canvas.width / gridSize) * gridSize //this code is translating the 1 demensional i into the 2d x and y. Imgainine you numbered every square in the grid left to right top to bottom. That number would be i. 
+                    var gridY = Math.floor(i / Math.floor(canvas.width / gridSize)) * gridSize
+                    ctx.fillRect(gridX, gridY, gridSize, gridSize)
+                }
             }
 
         }
@@ -106,7 +264,12 @@
     function saveGridAsJson() {
         var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(gridArray));
         downloadAnchorElement.setAttribute("href", dataStr);
-        var nameOfJsonFile = document.getElementById("fileName").value + ".json"
+        if (document.getElementById("fileName").value === "") {
+
+            var nameOfJsonFile = "filename.json"
+        } else {
+            var nameOfJsonFile = document.getElementById("fileName").value + ".json"
+        }
         downloadAnchorElement.setAttribute("download", nameOfJsonFile);
         downloadAnchorElement.click();
     }
@@ -114,7 +277,12 @@
     function loadGridJson() {
         var files = document.getElementById('selectFiles').files;
         var fr = new FileReader();
-        gridArray = JSON.parse(fr.readAsText(files.item(0)))
+        fr.readAsText(files[0])
+        fr.addEventListener("load", () => { //you have to do this really dumb thing because you have to wait for the file reader to finish before you can use the result.
+            // this will then display a text file
+            gridArray = JSON.parse(fr.result)
+        }, false);
+
     }
 
 
