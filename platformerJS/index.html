@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="UTF-8">
-    <title>runtime
+    <title>platformer
     </title>
     <style>
-        img{
-            display:none;
+        img {
+            display: none;
         }
     </style>
-  </head>
-  <body>
+</head>
+
+<body>
     <canvas id='canvas' width='900' height="700"></canvas>
     <img id='halle' src='/runtime/img/halle-v9.png'>
 
@@ -18,22 +20,29 @@
         var canvas = document.getElementById("canvas")
         var ctx = canvas.getContext('2d')
 
-        setInterval(main,50)
 
         //setup variables
-        var walkspeed = 1
+        var walkspeed = 2
+        var gravity = 1
+
 
         //player Variables
-        var playerX = 0 
-        var playerY = 0 
+        var playerX = 0
+        var playerY = 1
         var playerSpeedX = 0
         var playerSpeedY = 0
+        var playerWidth = 50
+        var playerHeight = 50
         var upPress = false
         var leftPress = false
         var downPress = false
         var rightPress = false
         var spacePress = false
+
+        //player Animation variables
         var frameCount = 0
+        var currentAnimation = "stand"
+        var newAnimationType = false //this is a flag used to know when a new animation has started so we can restart the frame count. 
 
         //platform variables
         var platformX = []
@@ -42,121 +51,211 @@
         var platformHeight = []
 
         //cannon variables
-        
-        
+        var cannonX = []
+        var cannonY = []
+        var cannonProjectileSpeedX = []
+        var cannonProjectileSpeedY = []
+        var cannonPelletsPerSecond = []
+
+        //collectable variables
+        var collectableX = []
+        var collectableY = []
+        var collectableType = []
+        var collectableBounce = []
+
+
         halleHeight = 120
         halleWidth = 85
         xpicture = 2295
         ypicture = 1330
 
 
-        function main(){
-            frameCount++
-            ctx.clearRect(0,0,1000,1000)
-            playerX = playerX + playerSpeedX
-            playerY = playerY + playerSpeedY
+        window.addEventListener("load", setupGame);
+
+        function setupGame() {
+            //create platforms
+            createPlatform(100, 400, 100, 100)
+
+            //create cannons
+            createCannon("top", 200)
+
+            //start game
+            setInterval(main, 50)
+
+        }
+
+
+        function main() {
+            ctx.clearRect(0, 0, 1000, 1000) //erase the screen so you can draw everything in it's most current position. Get rid of this line to see why we need it
             //ctx.drawImage(imageVaribale, sourceY, SourceX, sourceWidth, sourceHeight, canvasX, canvasY, finalWidth, finalHeight)
             //https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
             //you only need the extra four source arguments if you want to only display a portion of the picture, if you want to show the whole picture you can just do drawImage(imageVar, canvasx, canvasy, width,height)
-            ctx.drawImage(halle,xpicture,ypicture,halleWidth,halleHeight,playerX,playerY,halleWidth,halleHeight)
-            if(frameCount > 15){
+            ctx.drawImage(halle, xpicture, ypicture, halleWidth, halleHeight, playerX, playerY, playerWidth, playerHeight)
+
+            playerX = playerX + playerSpeedX
+            playerY = playerY + playerSpeedY
+
+            playerSpeedY = playerSpeedY + gravity
+
+            animate() //this changes halle's picture to the next frame so it looks animated.             
+            keyboardControlActions() //keyboard controls 
+            drawPlatforms()
+            collision()
+        }
+
+        document.addEventListener("keydown", keyDownPress, false)
+        document.addEventListener("keyup", keyuppress, false)
+
+        function animate() {
+            frameCount++
+            if (frameCount > 15) {
                 xpicture += halleWidth
                 frameCount = 0
             }
 
-
-
-
-            if(upPress){
-                playerSpeedY -= walkspeed
-            }
-            if(downPress){
-                playerSpeedY += walkspeed
-            }
-            if(leftPress){
-                playerSpeedX -= walkspeed
-            }
-            if(rightPress){
-                playerSpeedX += walkspeed
-            }
-
-
-            if(playerX > canvas.width){
-                playerSpeedX = -playerSpeedX
-            }
-            if(playerX < 0){
-                playerSpeedX = -playerSpeedX
-            }
-            if(playerY > canvas.height){
-                playerSpeedY = -playerSpeedY
-            }
-            if(playerY < 0){
-                playerSpeedY = -playerSpeedY
+            if(xpicture > 2295 + halleWidth * 10){
+                xpicture = 2295
             }
         }
 
-    document.addEventListener("keydown", keyleftPress,false)
-	document.addEventListener("keyup", keyuppress,false)
+        function collision() {
+            //wall collision
+            if (playerX > canvas.width - playerWidth) {
+                playerSpeedX = 0
+                playerX = canvas.width - playerWidth
+            }
+            if (playerX < 0) {
+                playerSpeedX = 0
+                playerX = 0
+            }
+            if (playerY > canvas.height - playerHeight) {
+                playerSpeedY = 0
+                playerY = canvas.height - playerHeight 
+            }
+            if (playerY < 0) {
+                playerSpeedY = 0
+                playerY = 0
+            }
+
+            //platform collision
+            //https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection
+            for (var i = 0; i < platformX.length; i++) {
+                if (playerX + playerWidth > platformX[i]) { //if the right side of the player is inside of the left side of the platform
+                    if (playerX < platformX[i] + platformWidth[i]) { //and the left side of the player is inside of the right side of the platform
+                        if (playerY < platformY[i] + platformHeight[i]) { //top of player is above bottom of platform
+                            if (playerY + playerHeight > platformY[i]) {//bottom of player is below top of platform
+                                //this is the actual collision code. we know we are colliding, so what do we do about it?
+                                if (playerSpeedX > 0) { //I need to keep the player from going into the box, this means I need to know what direction the player was traveling in. if he's going down, I need to teleport him to the top of the box and not the bottom
+
+                                } else {
+
+                                }
+
+                                if (playerSpeedY > 0) { //player is traveling down
+                                    playerY = platformY[i] - playerHeight
+                                    playerSpeedY = 0
+                                } else {
+                                    playerY = platformY[i] + platformHeight[i]
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
 
 
-    function collision(){
 
-    }
+        }
 
-    function createPlatform(x,y,width,height){
+        function drawPlatforms() {
+            for (var i = 0; i < platformX.length; i++) {
+                ctx.fillStyle = "grey"
+                ctx.fillRect(platformX[i], platformY[i], platformWidth[i], platformHeight[i])
+            }
+        }
 
-    }
+        function drawCannons() {
 
-    function createCannon(position,x,y){
-
-    }
-
-    function createProjectile (x,y,xspeed,yspeed){
-
-
-    }
+        }
 
 
-    function detectWhichKeysAreBeingPressed(){
-        
-    }
+        function createPlatform(x, y, width, height) {
+            platformX.push(x)
+            platformY.push(y)
+            platformHeight.push(height)
+            platformWidth.push(width)
+        }
 
-	function keyleftPress(e){ //the e in this parenthesis is a parameter, it contains information about what key you pressed. e is also short for event in this case. 
-		if(e.key === "ArrowUp" || e.key === "w" ){ // || means or. || is or && is and. if one or the other is true, then true. this if is asking if the key is w or arrowup
-			upPress= true
-		}
-		if(e.key === "ArrowLeft" || e.key === "a"){
-			leftPress= true
-		}
-		if(e.key === "ArrowDown" || e.key === "s"){
-			downPress= true
-		}
-		if(e.key === "ArrowRight" || e.key === "d"){
-			rightPress= true
-		}
-		if(e.key === " "){
-			spacePress= true
-		}
-			
-	}
-	function keyuppress(e){ //keydown and keyup are both needed because both are important. think of a gas pedal: you want to car to know you pressed down the pedal, and you REALLY want it to know when you let up on the gas. 
-		if(e.key === "ArrowUp"|| e.key === "w"){
-			upPress= false
-		}
-		if(e.key === "ArrowLeft"|| e.key === "a"){
-			leftPress= false
-		}
-		if(e.key === "ArrowDown"|| e.key === "s"){
-			downPress= false
-		}
-		if(e.key === "ArrowRight"|| e.key === "d"){
-			rightPress= false
-		}
-		if(e.key === " "){
-			spacePress= false
-		}
-	}
+        function createCannon(wallLocation, position) {
+
+        }
+
+        function createProjectile(x, y, xspeed, yspeed) {
+
+
+        }
+
+
+        function detectWhichKeysAreBeingPressed() {
+
+        }
+
+        function keyboardControlActions() {
+            if (upPress) {
+                playerSpeedY -= walkspeed
+            }
+            if (downPress) {
+                playerSpeedY += walkspeed
+            }
+            if (leftPress) {
+                playerSpeedX -= walkspeed
+            }
+            if (rightPress) {
+                playerSpeedX += walkspeed
+            }
+            if (spacePress) {
+                playerSpeedY = playerSpeedY - 10
+            }
+        }
+
+        function keyDownPress(e) { //the e in this parenthesis is a parameter, it contains information about what key you pressed. e is also short for event in this case. 
+            if (e.key === "ArrowUp" || e.key === "w") { // || means or. || is or && is and. if one or the other is true, then true. this if is asking if the key is w or arrowup
+                upPress = true
+            }
+            if (e.key === "ArrowLeft" || e.key === "a") {
+                leftPress = true
+            }
+            if (e.key === "ArrowDown" || e.key === "s") {
+                downPress = true
+            }
+            if (e.key === "ArrowRight" || e.key === "d") {
+                rightPress = true
+            }
+            if (e.key === " ") {
+                spacePress = true
+            }
+
+        }
+        function keyuppress(e) { //keydown and keyup are both needed because both are important. think of a gas pedal: you want to car to know you pressed down the pedal, and you REALLY want it to know when you let up on the gas. 
+            if (e.key === "ArrowUp" || e.key === "w") {
+                upPress = false
+            }
+            if (e.key === "ArrowLeft" || e.key === "a") {
+                leftPress = false
+            }
+            if (e.key === "ArrowDown" || e.key === "s") {
+                downPress = false
+            }
+            if (e.key === "ArrowRight" || e.key === "d") {
+                rightPress = false
+            }
+            if (e.key === " ") {
+                spacePress = false
+            }
+        }
 
     </script>
-  </body>
+</body>
+
 </html>
