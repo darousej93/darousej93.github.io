@@ -1,0 +1,55 @@
+### User Story / Gameplay
+- Describe the gameplay
+    gameplay is a pong style game but in a circle. 
+    game starts with two different curved paddles on either side of a screen with a ball in the middle.
+    the ball would move from side to side and would bounce off of the paddles.
+    you would be able to  move your paddle, and select a second player or an ai for the other paddle
+    the ball would either go in the direction you'd think it would when bouncing, or maybe it would move in a curved
+    way, this is vauge because it is something I will have to see how it feels when the game is made
+    the game ends when you miss the ball three times. Missing the ball entails it going past your paddle and off of the screen.
+    when it goes off the screen the player who didn't miss the ball gains a point and the game is reset
+    after three misses on either side the game is over and a winner is declared. 
+    
+    if's for the game are
+        if the ball goes off the screen {
+            return ball to center of screen
+            increase score for player that didn't miss ball
+            reset paddles
+        }
+        if button is pressed{
+            depending on button move the corrisponding paddle up or down
+        }
+        if three points are gained by one player{
+            end the game and bring up the final score and a restart button
+        }
+        if the start/restart button is pressed{
+            begin countdown
+            after countdown start ball moving in random direction. 
+        }
+
+### Visual Game Components:
+- What are the visual game components? For example, in Bouncing Box, the game components were the board and the box.
+  - Which will be static? (the board)
+  - Which will be animated? (the box)
+
+  Not sure what the background will be. I'm thinking a dark screen with some curved grids to help see where the ball
+  will go, but that depends on how i get the ball to move
+  I'll need x y dx and dy for both paddles and the ball
+  some variables for the buttons
+  a score
+- What data will you need to manage each game component? For example, in Bouncing Box, the data values were `positionX`, `speedX`, and `points`.
+I'll have an x y speedx and speedy for the two paddles and the ball, which is twelve variables, or three objects
+I'll also need a height and width for the paddles, and I'll probably need some settings like grid spacing and max paddle speed
+
+### Events / Logic 
+
+    for the ball, when it bounces we just reverse direction, possibly. I may do a different system 
+    depending on how it feels
+
+    for the ai you just follow the ball  by adding or subtracting to the speed when the 
+    paddle is not lined up with the ball. you move slower than the ball and react slow so you 
+    don't always win. 
+
+    increase score when off the screen. 
+
+    most of these are in the if
